@@ -14,6 +14,8 @@ from crop import *
 import os
 import sys
 import math
+import time
+import imghdr
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -45,7 +47,9 @@ class Ui_Form(object):
         self.label_2.setFont(font)
         self.label_2.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         self.label_2.setStyleSheet("background-color: rgb(11, 11, 23);\n"
-"color: rgb(255, 255, 255);\n"
+"color: rgb(255, 0, 0);\n"
+"font-size: 36px;\n"
+"font-weight: bold;\n"
 "padding: 10px;")
         self.label_2.setObjectName("label_2")
         self.verticalLayout.addWidget(self.label_2)
@@ -82,6 +86,20 @@ class Ui_Form(object):
 "padding: 10px;")
         self.label_5.setObjectName("label_5")
         self.verticalLayout.addWidget(self.label_5)
+
+        self.label_6 = QtWidgets.QLabel(Form)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(12)
+        self.label_6.setFont(font)
+        self.label_6.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.label_6.setStyleSheet("background-color: rgb(11, 11, 23);\n"
+"color: rgb(255, 255, 255);\n"
+"padding: 10px;")
+        self.label_6.setWordWrap(True) 
+        self.label_6.setObjectName("label_6")
+        
+        self.verticalLayout.addWidget(self.label_6)
         self.listView = QtWidgets.QListView(Form)
         self.listView.setObjectName("listView")
         self.verticalLayout.addWidget(self.listView)
@@ -153,12 +171,22 @@ class Ui_Form(object):
         self.lblDots5.setStyleSheet(self.sty_dots)
         self.lblDots5.setObjectName("lblDots")
 
+        self.lblPick = QtWidgets.QLabel(Form)
+        self.lblPick.setGeometry(QtCore.QRect(266, 266, 2, 2))
+        self.lblPick.setStyleSheet(self.sty_dots)
+        self.lblPick.setObjectName("lblDots")
+
         self.pushButton.clicked.connect(self.crop_image)
         self.pushButton_2.clicked.connect(self.auto_update)
         self.pushButton_3.clicked.connect(self.pick_folder)
 
         self.folder_path = "C:\\Users\\" + getpass.getuser() + "\\Desktop\\"
         self.full_path = "C:\\Users\\" + getpass.getuser() + "\\Desktop\\"
+
+        if self.is_auto_update:
+            while self.is_auto_update:
+                self.crop_image()
+                time.sleep(self.auto_update_delay)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -169,24 +197,24 @@ class Ui_Form(object):
         self.path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select a folder:', self.folder_path)
         if self.path != '':
             self.folder_path = self.path
-        #     REMOVE  self.folder = self.path
-        #     self.folder = self.path
             # get all files from the directory
-            self.files = os.listdir( self.folder_path)
+            self.files = os.listdir(self.folder_path)
             # get the last file from the directory
             self.file = self.files[-1]
             # get the last file from the directory
             self.full_path = self.folder_path + '/' + self.file
-        #     self.pixmap = QtGui.QPixmap(self.folder + '/' + self.file)
-        #     self.pixmapzoom = self.pixmap.scaled(self.pixmap.size() * 2, QtCore.Qt.KeepAspectRatio)
-        #     self.label.setPixmap(self.pixmapzoom)
-        #     self.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
+            self.label_6.setText(str(self.folder_path))
+
+            text_file = open("user_settings.txt", "w")
+            n = text_file.write(str(self.folder_path))
+            text_file.close()
 
      
     def getAngle(self, event):
         # get the mouse position
         x = event.x()
         y = event.y()
+        self.lblPick.setGeometry(QtCore.QRect(x + 11, y + 11, 5, 5))
         # get the image width and height
         width = self.label.width()
         height = self.label.height()
@@ -196,8 +224,6 @@ class Ui_Form(object):
         yDistance = abs(int(y - height/2))
         # get distance from the center
         distance = math.sqrt(xDistance**2 + yDistance**2)
-        # print("x =", str(xDistance), ", y =", str(yDistance), ", distance =", str(distance))
-        # print("distance = ", str(int(distance)))
         # get cos, sin, tan
         cos = xDistance/distance
         sin = yDistance/distance
@@ -207,39 +233,43 @@ class Ui_Form(object):
         # get angle in degrees
         angle = abs(math.degrees(math.atan(tan)) - 90)
         # print("angle = ", str(angle))
-        self.label_2.setText(str(int(angle)))
+        self.label_2.setText(str(round(float(angle), 2)))
         # update label_4 text
         self.label_3.setText("COS " + str(cos))
         self.label_4.setText("SIN " + str(sin))
-
-#     def pick_folder(self):
-#         # get the last file from directory
-#         self.path = QtWidgets.QFileDialog.getExistingDirectory(None, 'Select a folder:', 'C:\\Users\\eucri\\Downloads\\PANGUA\\PangyaUS_851\\capture')
-#         if self.path != '':
-#             self.folder = self.path
-#             # get all files from the directory
-#             self.files = os.listdir(self.path)
-#             # get the last file from the directory
-#             self.file = self.files[-1]
-#             # get the last file from the directory
-#             self.fullPath = self.folder + '/' + self.file
-#             self.pixmap = QtGui.QPixmap(self.folder + '/' + self.file)
-#             self.pixmapzoom = self.pixmap.scaled(self.pixmap.size() * 2, QtCore.Qt.KeepAspectRatio)
-#             self.label.setPixmap(self.pixmapzoom)
-#             self.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
-        
+    
     def crop_image(self):
+
         self.image_path = "new_screenshot.jpg"
-        # self.full_path = os.path.join(os.getcwd(), self.image_path)
-        # self.app_path = 'C:\\Users\\eucri\\Downloads\\PANGUA\\PangyaUS_851\\capture'
-        save_new_image(self.full_path)
-        self.label.setPixmap(QtGui.QPixmap("new_screenshot.jpg"))
+        self.files = os.listdir(self.folder_path)
+        self.file = self.files[-1]
+
+        try:
+            with open('user_settings.txt') as f:
+                lines = f.readlines()
+                self.folder_path = lines[0]
+                self.label_6.setText(lines[0])
+                # f.close()
+            print(self.label_6.text())
+            print(self.folder_path)
+            print(self.file)
+            
+            
+            save_new_image(self.folder_path + '/' + self.file)
+            self.label.setPixmap(QtGui.QPixmap("new_screenshot.jpg"))
+
+        except Exception as e:
+            print(e)
+            self.is_auto_update = False
 
     def auto_update(self):
         if self.is_auto_update:
-            print("auto update")
+            self.is_auto_update = False
+            self.label_5.setText("AUTO UPDATE: " + str(self.is_auto_update).upper())
         else:
-            print("stop auto update")
+            self.is_auto_update = True
+            self.label_5.setText("AUTO UPDATE: " + str(self.is_auto_update).upper())
+           
         
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -247,7 +277,8 @@ class Ui_Form(object):
         self.label_2.setText(_translate("Form", "000"))
         self.label_3.setText(_translate("Form", "COS"))
         self.label_4.setText(_translate("Form", "SIN"))
-        self.label_5.setText(_translate("Form", "AUTOUPDATE: ON"))
+        self.label_5.setText(_translate("Form", "AUTO UPDATE: " + str(self.is_auto_update).upper()))
+        self.label_6.setText(_translate("Form", "FOLDER"))
         self.pushButton.setText(_translate("Form", "UPDATE"))
         self.pushButton_2.setText(_translate("Form", "AUTO UPDATE"))
         self.pushButton_3.setText(_translate("Form", "FOLDER"))

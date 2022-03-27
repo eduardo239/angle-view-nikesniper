@@ -64,7 +64,7 @@ class Ui_AngleViewNikesniper(object):
 
     # TODO: add a ruler window
     def closeEvent(self, event):
-        print("closing")	
+        	
         reply = QtWidgets.QMessageBox.question(self, 'Message',
             "Are you sure to quit?", QtWidgets.QMessageBox.Yes | 
             QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
@@ -101,7 +101,7 @@ class Ui_AngleViewNikesniper(object):
 
     def retranslateUi(self, AngleViewNikesniper):
         _translate = QtCore.QCoreApplication.translate
-        AngleViewNikesniper.setWindowTitle(_translate("AngleViewNikesniper", "MainWindow"))
+        AngleViewNikesniper.setWindowTitle(_translate("AngleViewNikesniper", "ANGLE VIEW - BY NIKESNIPER"))
         self.pushButton.setText(_translate("AngleViewNikesniper", "open ruler"))
         self.pushButton_2.setText(_translate("AngleViewNikesniper", "open angle"))
         self.menuFile.setTitle(_translate("AngleViewNikesniper", "File"))
