@@ -19,10 +19,8 @@ import imghdr
 
 class Ui_Form(object):
     def setupUi(self, Form):
-        self.is_auto_update = True
-        self.auto_update_delay = 3
-        # self.auto_update()
-
+        self.is_auto_update = False
+        self.auto_update_delay = 5
         self.screenwidth = QtWidgets.QDesktopWidget().screenGeometry().width()
         self.screenheight = QtWidgets.QDesktopWidget().screenGeometry().height()
         Form.setObjectName("ANGLE VIEW")
@@ -106,30 +104,57 @@ class Ui_Form(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.pushButton = QtWidgets.QPushButton(Form)
-        self.pushButton.setStyleSheet("padding: 8px;\n"
-"background-color: rgb(13, 0, 50);\n"
-"color: rgb(255, 255, 255);\n"
-"font: 12pt \"Calibri\";\n"
-"border: 0px;\n"
-"outline: 0px;")
+        self.pushButton.setStyleSheet("QPushButton {\n"
+"    font: 10pt \"Calibri\";\n"
+"    background-color: rgb(25, 25, 25);\n"
+"    color: rgb(255, 255, 255);\n"
+"    border: 0px;\n"
+"    outline: 0px;\n"
+"    padding: 10px;\n"
+"}\n"
+"\n"
+"QPushButton::hover{\n"
+"background-color: rgb(66, 66, 66);\n"
+"    color: rgb(255, 255, 255);\n"
+"    \n"
+"}")
+        self.pushButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton.setObjectName("pushButton")
         self.horizontalLayout.addWidget(self.pushButton)
         self.pushButton_2 = QtWidgets.QPushButton(Form)
-        self.pushButton_2.setStyleSheet("padding: 8px;\n"
-"background-color: rgb(13, 0, 50);\n"
-"color: rgb(255, 255, 255);\n"
-"font: 12pt \"Calibri\";\n"
-"border: 0px;\n"
-"outline: 0px;")
+        self.pushButton_2.setStyleSheet("QPushButton {\n"
+"    font: 10pt \"Calibri\";\n"
+"    background-color: rgb(25, 25, 25);\n"
+"    color: rgb(255, 255, 255);\n"
+"    border: 0px;\n"
+"    outline: 0px;\n"
+"    padding: 10px;\n"
+"}\n"
+"\n"
+"QPushButton::hover{\n"
+"background-color: rgb(66, 66, 66);\n"
+"    color: rgb(255, 255, 255);\n"
+"    \n"
+"}")
         self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.horizontalLayout.addWidget(self.pushButton_2)
         self.pushButton_3 = QtWidgets.QPushButton(Form)
-        self.pushButton_3.setStyleSheet("padding: 8px;\n"
-"background-color: rgb(13, 0, 50);\n"
-"color: rgb(255, 255, 255);\n"
-"font: 12pt \"Calibri\";\n"
-"border: 0px;\n"
-"outline: 0px;")
+        self.pushButton_3.setStyleSheet("QPushButton {\n"
+"    font: 10pt \"Calibri\";\n"
+"    background-color: rgb(25, 25, 25);\n"
+"    color: rgb(255, 255, 255);\n"
+"    border: 0px;\n"
+"    outline: 0px;\n"
+"    padding: 10px;\n"
+"}\n"
+"\n"
+"QPushButton::hover{\n"
+"background-color: rgb(66, 66, 66);\n"
+"    color: rgb(255, 255, 255);\n"
+"    \n"
+"}")
+        self.pushButton_3.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton_3.setObjectName("pushButton_3")
         self.horizontalLayout.addWidget(self.pushButton_3)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -183,14 +208,10 @@ class Ui_Form(object):
         self.folder_path = "C:\\Users\\" + getpass.getuser() + "\\Desktop\\"
         self.full_path = "C:\\Users\\" + getpass.getuser() + "\\Desktop\\"
 
-        if self.is_auto_update:
-            while self.is_auto_update:
-                self.crop_image()
-                time.sleep(self.auto_update_delay)
+        self.get_folder()
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
-        # self.crop_image()
 
     def pick_folder(self):
         # get the last file from directory
@@ -209,12 +230,11 @@ class Ui_Form(object):
             n = text_file.write(str(self.folder_path))
             text_file.close()
 
-     
     def getAngle(self, event):
         # get the mouse position
         x = event.x()
         y = event.y()
-        self.lblPick.setGeometry(QtCore.QRect(x + 11, y + 11, 5, 5))
+        self.lblPick.setGeometry(QtCore.QRect(x + 9, y + 9, 5, 5))
         # get the image width and height
         width = self.label.width()
         height = self.label.height()
@@ -237,31 +257,34 @@ class Ui_Form(object):
         # update label_4 text
         self.label_3.setText("COS " + str(cos))
         self.label_4.setText("SIN " + str(sin))
+
+    def get_folder(self):
+        text_file = open("user_settings.txt", "r")
+        self.folder_path = text_file.read()
+        text_file.close()
+        self.label_6.setText(self.folder_path)
     
     def crop_image(self):
-
         self.image_path = "new_screenshot.jpg"
         self.files = os.listdir(self.folder_path)
         self.file = self.files[-1]
-
+        # add items from folder, to the list
+        
         try:
-            with open('user_settings.txt') as f:
-                lines = f.readlines()
-                self.folder_path = lines[0]
-                self.label_6.setText(lines[0])
-                # f.close()
-            print(self.label_6.text())
-            print(self.folder_path)
-            print(self.file)
-            
-            
             save_new_image(self.folder_path + '/' + self.file)
             self.label.setPixmap(QtGui.QPixmap("new_screenshot.jpg"))
-
         except Exception as e:
             print(e)
             self.is_auto_update = False
+            self.label_5.setText("AUTO UPDATE: " + str(self.is_auto_update).upper())
 
+    def auto(self):
+        pass
+        # while self.is_auto_update:
+        #     print("auto")
+        #     self.crop_image()
+        #     time.sleep(self.auto_update_delay)
+    
     def auto_update(self):
         if self.is_auto_update:
             self.is_auto_update = False
@@ -269,8 +292,8 @@ class Ui_Form(object):
         else:
             self.is_auto_update = True
             self.label_5.setText("AUTO UPDATE: " + str(self.is_auto_update).upper())
-           
-        
+            self.auto()
+
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "AGNLE VIEW"))
@@ -278,7 +301,7 @@ class Ui_Form(object):
         self.label_3.setText(_translate("Form", "COS"))
         self.label_4.setText(_translate("Form", "SIN"))
         self.label_5.setText(_translate("Form", "AUTO UPDATE: " + str(self.is_auto_update).upper()))
-        self.label_6.setText(_translate("Form", "FOLDER"))
+        # self.label_6.setText(_translate("Form", "FOLDER"))
         self.pushButton.setText(_translate("Form", "UPDATE"))
         self.pushButton_2.setText(_translate("Form", "AUTO UPDATE"))
         self.pushButton_3.setText(_translate("Form", "FOLDER"))

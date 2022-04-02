@@ -15,6 +15,8 @@ class Ui_AngleViewNikesniper(object):
     def setupUi(self, AngleViewNikesniper):
         AngleViewNikesniper.setObjectName("AngleViewNikesniper")
         AngleViewNikesniper.resize(272, 84)
+        AngleViewNikesniper.setStyleSheet("background-color: rgb(30, 30, 30);\n"
+"color: rgb(247, 247, 247);")
         self.centralwidget = QtWidgets.QWidget(AngleViewNikesniper)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)

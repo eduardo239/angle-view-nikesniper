@@ -9,13 +9,17 @@
 
 
 from PyQt5 import QtCore, QtWidgets
-from a2 import Ui_Form as Ui_Angle_View
-from r import Ui_Form as Ui_Ruler
+from app_angle import Ui_Form as Ui_Angle_View
+from app_ruler import Ui_Form as Ui_Ruler
 
 class Ui_AngleViewNikesniper(object):
     def setupUi(self, AngleViewNikesniper):
         AngleViewNikesniper.setObjectName("AngleViewNikesniper")
         AngleViewNikesniper.resize(272, 84)
+        AngleViewNikesniper.setStyleSheet("""
+background-color: rgb(30, 30, 30);
+color: rgb(247, 247, 247);
+        """)
         self.screenwidth = QtWidgets.QDesktopWidget().screenGeometry().width()
         self.screenheight = QtWidgets.QDesktopWidget().screenGeometry().height()
         # position screen at the bottom of the screen
@@ -28,9 +32,17 @@ class Ui_AngleViewNikesniper(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setObjectName("pushButton")
+        self.pushButton.setStyleSheet("""
+background-color: rgb(255, 30, 30);
+color: rgb(247, 247, 247);
+        """)
         self.horizontalLayout.addWidget(self.pushButton)
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.setStyleSheet("""
+background-color: rgb(255, 30, 30);
+color: rgb(247, 247, 247);
+        """)
         self.horizontalLayout.addWidget(self.pushButton_2)
         self.verticalLayout.addLayout(self.horizontalLayout)
         AngleViewNikesniper.setCentralWidget(self.centralwidget)
@@ -47,9 +59,16 @@ class Ui_AngleViewNikesniper(object):
         self.actionExit.setObjectName("actionExit")
         self.menuFile.addAction(self.actionExit)
         self.menubar.addAction(self.menuFile.menuAction())
+        self.menuFile.setStyleSheet("""QMenu:hover {
+background-color: rgb(30, 30, 30);
+color: rgb(247, 247, 247);
+}
+""")
 
         self.pushButton.clicked.connect(self.toogle_ruler_window)
         self.pushButton_2.clicked.connect(self.toogle_angle_window)
+
+        self.actionExit.triggered.connect(self.shutprocess)
         
         self.angle_view_window = QtWidgets.QWidget()
         self.uia = Ui_Angle_View()
@@ -62,9 +81,7 @@ class Ui_AngleViewNikesniper(object):
         self.retranslateUi(AngleViewNikesniper)
         QtCore.QMetaObject.connectSlotsByName(AngleViewNikesniper)
 
-    # TODO: add a ruler window
     def closeEvent(self, event):
-        	
         reply = QtWidgets.QMessageBox.question(self, 'Message',
             "Are you sure to quit?", QtWidgets.QMessageBox.Yes | 
             QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
@@ -98,6 +115,15 @@ class Ui_AngleViewNikesniper(object):
 
     def close_ruler_window(self):
         self.ruler_window.hide()
+
+    def shutprocess(self):
+        reply = AngleViewNikesniper.question(self, 'Window Close', 'Are you sure you want to close the window?', AngleViewNikesniper.Yes | AngleViewNikesniper.No, AngleViewNikesniper.No)
+
+        if reply == AngleViewNikesniper.Yes:
+            self.close()
+            print('Window closed')
+        else:
+            pass
 
     def retranslateUi(self, AngleViewNikesniper):
         _translate = QtCore.QCoreApplication.translate
